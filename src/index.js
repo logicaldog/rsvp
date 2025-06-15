@@ -94,9 +94,9 @@ export default {
           body: JSON.stringify({
             personalizations: [{
               to: [{ email: 'reunionteam@anacortes1975.com' }],
-              dkim_domain: "anacortes1975.com",
-              dkim_selector: "mailchannels",
-              dkim_private_key: env.DKIM_PRIVATE_KEY
+              //dkim_domain: "anacortes1975.com",
+              //dkim_selector: "mailchannels",
+              //dkim_private_key: env.DKIM_PRIVATE_KEY
             }],
             from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
             subject: 'New RSVP Submission',
