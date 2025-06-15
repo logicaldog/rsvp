@@ -125,6 +125,7 @@ export default {
         // ✅ Redirect
         return Response.redirect('/thanks.html', 303);
       } catch (err) {
+        
         return jsonError("Something went wrong processing your submission. Please try again.", 500);
       }
     }
