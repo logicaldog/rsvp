@@ -83,7 +83,7 @@ export default {
         console.log("✅ Validation passed. Proceeding to KV write...");
         await env.REUNION_KV.put(key, JSON.stringify(data));
 
-        // Notify the team via Resend
+        // Notify the team — test-mode
         console.log("✅ KV write complete. Sending notification email...");
         const notifyRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -92,10 +92,10 @@ export default {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            from: "reunion@anacortes1975.com",
-            to: ["reunionteam@anacortes1975.com"],
-            reply_to: "reunion@anacortes1975.com",
-            subject: "New RSVP Submission",
+            from: "reunion@resend.dev",
+            to: ["notify@resend.dev"],
+            reply_to: "reunion@resend.dev",
+            subject: "New RSVP Submission (TEST)",
             text: JSON.stringify(data, null, 2)
           })
         });
@@ -104,7 +104,7 @@ export default {
         console.log("📤 Resend notification status:", notifyRes.status);
         console.log("📤 Resend response body:", notifyBody);
 
-        // Optional confirmation to registrant
+        // Confirmation to registrant — test-mode
         if (hasEmail) {
           console.log("📬 Sending confirmation email to registrant:", data.email);
           const confirmRes = await fetch("https://api.resend.com/emails", {
@@ -114,10 +114,10 @@ export default {
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              from: "reunion@anacortes1975.com",
-              to: [data.email],
-              reply_to: "reunion@anacortes1975.com",
-              subject: "Your RSVP was received",
+              from: "reunion@resend.dev",
+              to: ["confirm@resend.dev"],
+              reply_to: "reunion@resend.dev",
+              subject: "Your RSVP was received (TEST)",
               text: "Thanks for RSVPing! We’ve received your response and will be in touch with updates."
             })
           });
