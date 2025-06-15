@@ -22,13 +22,38 @@ function jsonError(message, status = 400) {
   });
 }
 
+async function serveAsset(path) {
+  const page = await fetch(`https://raw.githubusercontent.com/logicaldog/rsvp/main/${path}`);
+  if (page.ok) {
+    return new Response(await page.text(), {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    });
+  } else {
+    return new Response('Page not found', { status: 404 });
+  }
+}
+
 export default {
   async fetch(request, env, ctx) {
-    if (request.method === 'POST' && new URL(request.url).pathname === '/submit') {
+    const url = new URL(request.url);
+
+    if (request.method === 'GET') {
+      if (url.pathname === '/' || url.pathname === '/index.html') {
+        return serveAsset('index.html');
+      }
+      if (url.pathname === '/rsvp.html') {
+        return serveAsset('rsvp.html');
+      }
+      if (url.pathname === '/thanks.html') {
+        return serveAsset('thanks.html');
+      }
+      return new Response('Not Found', { status: 404 });
+    }
+
+    if (request.method === 'POST' && url.pathname === '/submit') {
       try {
         const data = await request.json();
 
-        // Minimal validation
         if (!isAlphaOrSpace(data.firstName) || !isAlphaOrSpace(data.lastName)) {
           return jsonError("Please enter a valid first and last name (letters, spaces, hyphens, apostrophes only).");
         }
@@ -47,12 +72,10 @@ export default {
           return jsonError("Comments must be 500 characters or fewer.");
         }
 
-        // Store in KV
         const timestamp = Date.now();
         const key = `rsvp:${timestamp}`;
         await env.REUNION_KV.put(key, JSON.stringify(data));
 
-        // Email to reunion team
         await fetch('https://api.mailchannels.net/tx/v1/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -72,15 +95,12 @@ export default {
           })
         });
 
-        // Optional: Email to registrant
         if (hasEmail) {
           await fetch('https://api.mailchannels.net/tx/v1/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              personalizations: [{
-                to: [{ email: data.email }]
-              }],
+              personalizations: [{ to: [{ email: data.email }] }],
               from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
               subject: 'Your RSVP was received',
               content: [{
@@ -91,7 +111,7 @@ export default {
           });
         }
 
-        return Response.redirect('https://rsvp.anacortes1975.com/thanks', 303);
+        return Response.redirect('/thanks.html', 303);
       } catch (err) {
         return jsonError("Something went wrong processing your submission. Please try again.", 500);
       }
