@@ -1,1 +1,106 @@
-<!-- Placeholder: RSVP form HTML goes here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSVP – AHS Class of 1975 Reunion</title>
+  <style>
+    body {
+      background-color: #36006b;
+      color: white;
+      font-family: sans-serif;
+      padding: 1rem;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    form {
+      max-width: 600px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: none;
+    }
+    button {
+      background-color: white;
+      color: #36006b;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .caption {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>RSVP for the 50-Year Reunion</h1>
+  <form method="POST" action="/submit">
+    <label>First Name - Required<input name="firstName" required></label>
+    <label>Last Name - Required<input name="lastName" required></label>
+    <label>Maiden Name (if applicable)<input name="maidenName"></label>
+
+    <div class="caption">Contact - We need either your email or phone so we can contact you.</div>
+    <label>Email<input type="email" name="email"></label>
+    <label>Phone<input name="phone"></label>
+
+    <div class="caption">Do you plan to attend:</div>
+    <label>Friday Night Football Game & Village Pizza?
+      <select name="football">
+        <option value="">--Select--</option>
+        <option>Yes</option>
+        <option>No</option>
+        <option>Maybe</option>
+      </select>
+    </label>
+    <label>Saturday Barbecue at Washington Park?
+      <select name="bbq">
+        <option value="">--Select--</option>
+        <option>Yes</option>
+        <option>No</option>
+        <option>Maybe</option>
+      </select>
+    </label>
+    <label>Saturday Dinner at the Depot?
+      <select name="dinner">
+        <option value="">--Select--</option>
+        <option>Yes</option>
+        <option>No</option>
+        <option>Maybe</option>
+      </select>
+    </label>
+    <label>Will you be going to Village Pizza after the football game?
+      <select name="pizza">
+        <option value="">--Select--</option>
+        <option>Yes</option>
+        <option>No</option>
+        <option>Maybe</option>
+      </select>
+    </label>
+
+    <label>Comments or notes (optional):
+      <textarea name="comments" rows="4"></textarea>
+    </label>
+
+    <button type="submit">Submit RSVP</button>
+  </form>
+</body>
+</html>

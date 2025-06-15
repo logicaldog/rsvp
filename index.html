@@ -1,1 +1,104 @@
-<!-- Placeholder: Landing page HTML goes here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anacortes Class of 1975 Reunion</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background-color: #36006b;
+      color: white;
+    }
+    header {
+      background-color: #4b0082;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    main {
+      padding: 1rem;
+    }
+    .event-section {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .event {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .event img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    .event h2 {
+      margin: 0.5rem 0 0.25rem;
+    }
+    .cta {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .cta a {
+      background-color: white;
+      color: #36006b;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 8px;
+    }
+    @media (min-width: 600px) {
+      .event-section {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .event {
+        flex: 1;
+        margin: 0 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Anacortes High School - Class of 1975 - 50-Year Reunion</h1>
+  </header>
+  <main>
+    <p style="text-align:center; font-size: 1.1rem;">
+      Join us for three days of celebration, reconnection, and memories!<br>
+      August 22–24, 2025 in Anacortes, Washington
+    </p>
+
+    <section class="event-section">
+      <div class="event">
+        <img src="https://rsvp.anacortes1975.com/assets/FootballGame.png" alt="Football Game">
+        <h2>Friday Night</h2>
+        <p>Attend the AHS football game and join classmates afterward at Village Pizza for informal mingling and drinks.</p>
+      </div>
+      <div class="event">
+        <img src="https://rsvp.anacortes1975.com/assets/Barbeque.png" alt="Saturday BBQ">
+        <h2>Saturday BBQ</h2>
+        <p>Relax and reconnect with friends and family at Washington Park with a casual BBQ and shared stories.</p>
+      </div>
+      <div class="event">
+        <img src="https://rsvp.anacortes1975.com/assets/PartyDinner.png" alt="Dinner Party">
+        <h2>Saturday Evening Dinner</h2>
+        <p>Enjoy a formal dinner at the Depot Arts Center with music, laughter, and reflections on our journey since 1975.</p>
+      </div>
+    </section>
+
+    <div class="cta">
+      <a href="/rsvp.html">RSVP Now</a>
+    </div>
+  </main>
+</body>
+</html>
