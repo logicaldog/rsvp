@@ -1,104 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anacortes Class of 1975 Reunion</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      background-color: #36006b;
-      color: white;
-    }
-    header {
-      background-color: #4b0082;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-    main {
-      padding: 1rem;
-    }
-    .event-section {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    .event {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-    .event img {
-      width: 100%;
-      max-width: 400px;
-      border-radius: 12px;
-      margin-bottom: 1rem;
-    }
-    .event h2 {
-      margin: 0.5rem 0 0.25rem;
-    }
-    .cta {
-      margin-top: 2rem;
-      text-align: center;
-    }
-    .cta a {
-      background-color: white;
-      color: #36006b;
-      padding: 0.75rem 1.5rem;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 8px;
-    }
-    @media (min-width: 600px) {
-      .event-section {
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      .event {
-        flex: 1;
-        margin: 0 1rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Anacortes High School - Class of 1975 - 50-Year Reunion</h1>
-  </header>
-  <main>
-    <p style="text-align:center; font-size: 1.1rem;">
-      Join us for three days of celebration, reconnection, and memories!<br>
-      August 22–24, 2025 in Anacortes, Washington
-    </p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anacortes Class of 1975 – 50th Reunion</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-white text-purple-900 font-sans">
+    <!-- Header Section -->
+    <header class="bg-purple-900 text-white py-8 text-center">
+      <h1 class="text-4xl font-bold">Anacortes High School Class of 1975</h1>
+      <p class="text-xl mt-2">50 Year Reunion – September 5–7, 2025</p>
+    </header>
 
-    <section class="event-section">
-      <div class="event">
-        <img src="https://rsvp.anacortes1975.com/assets/FootballGame.png" alt="Football Game">
-        <h2>Friday Night</h2>
-        <p>Attend the AHS football game and join classmates afterward at Village Pizza for informal mingling and drinks.</p>
+    <!-- Main Banner Text -->
+    <section class="text-center py-10">
+      <h2 class="text-2xl font-semibold mb-4">Three days of fun times with old friends!</h2>
+      <p class="text-lg">at Anacortes Yacht Club</p>
+    </section>
+
+    <!-- Event Overview with Icons -->
+    <section class="py-12 px-4 max-w-5xl mx-auto grid gap-10 grid-cols-1 md:grid-cols-3 text-center">
+      <div>
+        <img src="FootballGame.png" alt="Football Game Icon" class="w-24 mx-auto mb-4" />
+        <h3 class="text-xl font-semibold">Friday Night</h3>
+        <p class="mt-2">Attend the football game and join us afterward at Village Pizza just like the good old days!</p>
       </div>
-      <div class="event">
-        <img src="https://rsvp.anacortes1975.com/assets/Barbeque.png" alt="Saturday BBQ">
-        <h2>Saturday BBQ</h2>
-        <p>Relax and reconnect with friends and family at Washington Park with a casual BBQ and shared stories.</p>
+      <div>
+        <img src="PartyDinner.png" alt="Dinner Party Icon" class="w-24 mx-auto mb-4" />
+        <h3 class="text-xl font-semibold">Saturday Evening</h3>
+        <p class="mt-2">Dinner and program at the Yacht Club. Doors open at 5:30, dinner at 6:30. $50 per person. Refundable until final meal count is due. Menu and program TBD.</p>
       </div>
-      <div class="event">
-        <img src="https://rsvp.anacortes1975.com/assets/PartyDinner.png" alt="Dinner Party">
-        <h2>Saturday Evening Dinner</h2>
-        <p>Enjoy a formal dinner at the Depot Arts Center with music, laughter, and reflections on our journey since 1975.</p>
+      <div>
+        <img src="Barbeque.png" alt="Barbeque Icon" class="w-24 mx-auto mb-4" />
+        <h3 class="text-xl font-semibold">Sunday Afternoon</h3>
+        <p class="mt-2">A casual BBQ at the Yacht Club starting at 1pm. Relax and catch up with classmates!</p>
       </div>
     </section>
 
-    <div class="cta">
-      <a href="/rsvp.html">RSVP Now</a>
-    </div>
-  </main>
-</body>
+    <!-- Call to Action -->
+    <section class="text-center py-10">
+      <p class="text-lg font-medium">Let us know if you’ll be attending!</p>
+      <a href="/rsvp" class="inline-block mt-4 bg-purple-900 text-white px-6 py-3 rounded hover:bg-purple-800">RSVP Now</a>
+    </section>
+
+    <footer class="text-center py-6 text-sm text-gray-500">
+      &copy; 2025 Anacortes Class of 1975 Reunion Committee
+    </footer>
+  </body>
 </html>

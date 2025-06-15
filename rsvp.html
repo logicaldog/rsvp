@@ -1,106 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RSVP – AHS Class of 1975 Reunion</title>
-  <style>
-    body {
-      background-color: #36006b;
-      color: white;
-      font-family: sans-serif;
-      padding: 1rem;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    form {
-      max-width: 600px;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    label {
-      display: flex;
-      flex-direction: column;
-      font-weight: bold;
-    }
-    input, select, textarea {
-      margin-top: 0.25rem;
-      padding: 0.5rem;
-      font-size: 1rem;
-      border-radius: 4px;
-      border: none;
-    }
-    button {
-      background-color: white;
-      color: #36006b;
-      font-weight: bold;
-      font-size: 1rem;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .caption {
-      font-weight: bold;
-      font-size: 1.2rem;
-      margin-top: 2rem;
-    }
-  </style>
-</head>
-<body>
-  <h1>RSVP for the 50-Year Reunion</h1>
-  <form method="POST" action="/submit">
-    <label>First Name - Required<input name="firstName" required></label>
-    <label>Last Name - Required<input name="lastName" required></label>
-    <label>Maiden Name (if applicable)<input name="maidenName"></label>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSVP – Anacortes Class of 1975 Reunion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-white text-purple-900 font-sans">
+    <div class="max-w-3xl mx-auto p-6">
+      <h1 class="text-3xl font-bold mb-6 text-center">RSVP Form</h1>
 
-    <div class="caption">Contact - We need either your email or phone so we can contact you.</div>
-    <label>Email<input type="email" name="email"></label>
-    <label>Phone<input name="phone"></label>
+      <form id="rsvpForm" onsubmit="return validateContact()" method="POST" action="/submit">
+        <!-- Contact Info -->
+        <!-- First, Last, Maiden Name -->
+        <fieldset class="mb-6">
+          <legend class="text-lg font-semibold mb-2">Name</legend>
+          <label class="block mb-2">First Name – Required</label>
+          <input type="text" name="firstName" required class="w-full border p-2 rounded" />
 
-    <div class="caption">Do you plan to attend:</div>
-    <label>Friday Night Football Game & Village Pizza?
-      <select name="football">
-        <option value="">--Select--</option>
-        <option>Yes</option>
-        <option>No</option>
-        <option>Maybe</option>
-      </select>
-    </label>
-    <label>Saturday Barbecue at Washington Park?
-      <select name="bbq">
-        <option value="">--Select--</option>
-        <option>Yes</option>
-        <option>No</option>
-        <option>Maybe</option>
-      </select>
-    </label>
-    <label>Saturday Dinner at the Depot?
-      <select name="dinner">
-        <option value="">--Select--</option>
-        <option>Yes</option>
-        <option>No</option>
-        <option>Maybe</option>
-      </select>
-    </label>
-    <label>Will you be going to Village Pizza after the football game?
-      <select name="pizza">
-        <option value="">--Select--</option>
-        <option>Yes</option>
-        <option>No</option>
-        <option>Maybe</option>
-      </select>
-    </label>
+          <label class="block mt-4 mb-2">Last Name – Required</label>
+          <input type="text" name="lastName" required class="w-full border p-2 rounded" />
 
-    <label>Comments or notes (optional):
-      <textarea name="comments" rows="4"></textarea>
-    </label>
+          <label class="block mt-4 mb-2">Maiden Name (if applicable)</label>
+          <input type="text" name="maidenName" class="w-full border p-2 rounded" />
+        </fieldset>
 
-    <button type="submit">Submit RSVP</button>
-  </form>
-</body>
+        <!-- Email and Phone -->
+        <fieldset class="mb-6">
+          <legend class="text-lg font-semibold mb-2">Contact – <span class="text-sm text-purple-800">Please provide either an email address or phone number so we can contact you — or both if you're comfortable.</span></legend>
+          <label class="block mb-2">Email</label>
+          <input type="email" name="email" class="w-full border p-2 rounded" />
+
+          <label class="block mt-4 mb-2">Phone</label>
+          <input type="tel" name="phone" class="w-full border p-2 rounded" />
+        </fieldset>
+
+        <!-- Mailing Info -->
+        <fieldset class="mb-6">
+          <legend class="text-lg font-semibold mb-2">Mailing Address (optional)</legend>
+          <label class="block mb-2">Address</label>
+          <input type="text" name="address" class="w-full border p-2 rounded" />
+
+          <label class="block mt-4 mb-2">City</label>
+          <input type="text" name="city" class="w-full border p-2 rounded" />
+
+          <label class="block mt-4 mb-2">State</label>
+          <input type="text" name="state" maxlength="2" class="w-20 border p-2 rounded" />
+
+          <label class="block mt-4 mb-2">ZIP</label>
+          <input type="text" name="zip" maxlength="10" class="w-32 border p-2 rounded" />
+        </fieldset>
+
+        <!-- Attendance Questions -->
+        <fieldset class="mb-6">
+          <legend class="text-lg font-semibold mb-4">Attendance Plans</legend>
+
+          <!-- Question Template -->
+          <div class="mb-4">
+            <p>Do you plan to attend the football game?</p>
+            <label><input type="radio" name="football" value="Yes" required /> Yes</label>
+            <label><input type="radio" name="football" value="Maybe" /> Maybe</label>
+            <label><input type="radio" name="football" value="No" /> No</label>
+          </div>
+
+          <div class="mb-4">
+            <p>Do you plan to go to Village Pizza after the game?</p>
+            <label><input type="radio" name="pizza" value="Yes" required /> Yes</label>
+            <label><input type="radio" name="pizza" value="Maybe" /> Maybe</label>
+            <label><input type="radio" name="pizza" value="No" /> No</label>
+          </div>
+
+          <div class="mb-4">
+            <p>Do you plan to attend the Saturday dinner?</p>
+            <label><input type="radio" name="dinner" value="Yes" required /> Yes</label>
+            <label><input type="radio" name="dinner" value="Maybe" /> Maybe</label>
+            <label><input type="radio" name="dinner" value="No" /> No</label>
+          </div>
+
+          <div class="mb-4">
+            <p>Do you plan to attend the Sunday BBQ?</p>
+            <label><input type="radio" name="bbq" value="Yes" required /> Yes</label>
+            <label><input type="radio" name="bbq" value="Maybe" /> Maybe</label>
+            <label><input type="radio" name="bbq" value="No" /> No</label>
+          </div>
+        </fieldset>
+
+        <!-- Comments -->
+        <fieldset class="mb-6">
+          <legend class="text-lg font-semibold mb-2">Comments</legend>
+          <textarea name="comments" rows="4" maxlength="500" placeholder="Let us know anything else..." class="w-full border p-2 rounded"></textarea>
+        </fieldset>
+
+        <!-- Submit -->
+        <div class="text-center">
+          <button type="submit" class="bg-purple-900 text-white px-6 py-3 rounded hover:bg-purple-800">Submit RSVP</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      function validateContact() {
+        const email = document.querySelector('input[name="email"]').value.trim();
+        const phone = document.querySelector('input[name="phone"]').value.trim();
+        if (!email && !phone) {
+          alert("Please provide either an email address or phone number so we can contact you if needed.");
+          return false;
+        }
+        return true;
+      }
+    </script>
+  </body>
 </html>
