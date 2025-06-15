@@ -83,9 +83,11 @@ export default {
         // 💾 Store to KV
         const timestamp = Date.now();
         const key = `rsvp:${timestamp}`;
+        console.log("✅ Validation passed. Proceeding to KV write...");
         await env.REUNION_KV.put(key, JSON.stringify(data));
 
         // 📧 Notify organizers
+        console.log("✅ KV write complete. Sending notification email...");
         await fetch('https://api.mailchannels.net/tx/v1/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -106,6 +108,7 @@ export default {
         });
 
         // 📧 Confirmation to registrant
+        console.log("✅ Notification email sent. Sending confirmation email...");
         if (hasEmail) {
           await fetch('https://api.mailchannels.net/tx/v1/send', {
             method: 'POST',
@@ -123,6 +126,7 @@ export default {
         }
 
         // ✅ Redirect
+        console.log("✅ Confirmation email (if any) sent. Redirecting...");
         return Response.redirect('/thanks.html', 303);
       } catch (err) {
         console.error("RSVP Submission Error:", err);
