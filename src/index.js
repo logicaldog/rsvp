@@ -94,6 +94,7 @@ export default {
           body: JSON.stringify({
             from: "reunion@anacortes1975.com",
             to: ["reunionteam@anacortes1975.com"],
+            reply_to: "reunion@anacortes1975.com",
             subject: "New RSVP Submission",
             text: JSON.stringify(data, null, 2)
           })
@@ -115,6 +116,7 @@ export default {
             body: JSON.stringify({
               from: "reunion@anacortes1975.com",
               to: [data.email],
+              reply_to: "reunion@anacortes1975.com",
               subject: "Your RSVP was received",
               text: "Thanks for RSVPing! We’ve received your response and will be in touch with updates."
             })
