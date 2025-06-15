@@ -127,7 +127,8 @@ export default {
 
         // ✅ Redirect
         console.log("✅ Confirmation email (if any) sent. Redirecting...");
-        return Response.redirect('/thanks.html', 303);
+        return Response.redirect(new URL('/thanks.html', request.url), 303);
+        //return Response.redirect('/thanks.html', 303);
       } catch (err) {
         console.error("RSVP Submission Error:", err);
         return jsonError("Something went wrong processing your submission. Please try again.", 500);
