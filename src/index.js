@@ -1,4 +1,3 @@
-// src/index.js
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -52,8 +51,17 @@ export default {
 
     if (request.method === 'POST' && url.pathname === '/submit') {
       try {
-        const data = await request.json();
+        // 🔧 Parse form data
+        let data = {};
+        const contentType = request.headers.get('content-type') || '';
+        if (contentType.includes('application/x-www-form-urlencoded')) {
+          const formData = await request.formData();
+          data = Object.fromEntries(formData.entries());
+        } else {
+          return jsonError("Unsupported content type", 415);
+        }
 
+        // ✅ Validation
         if (!isAlphaOrSpace(data.firstName) || !isAlphaOrSpace(data.lastName)) {
           return jsonError("Please enter a valid first and last name (letters, spaces, hyphens, apostrophes only).");
         }
@@ -72,10 +80,12 @@ export default {
           return jsonError("Comments must be 500 characters or fewer.");
         }
 
+        // 💾 Store to KV
         const timestamp = Date.now();
         const key = `rsvp:${timestamp}`;
         await env.REUNION_KV.put(key, JSON.stringify(data));
 
+        // 📧 Notify organizers
         await fetch('https://api.mailchannels.net/tx/v1/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -95,6 +105,7 @@ export default {
           })
         });
 
+        // 📧 Confirmation to registrant
         if (hasEmail) {
           await fetch('https://api.mailchannels.net/tx/v1/send', {
             method: 'POST',
@@ -111,6 +122,7 @@ export default {
           });
         }
 
+        // ✅ Redirect
         return Response.redirect('/thanks.html', 303);
       } catch (err) {
         return jsonError("Something went wrong processing your submission. Please try again.", 500);
@@ -120,3 +132,4 @@ export default {
     return new Response('Not Found', { status: 404 });
   }
 };
+
