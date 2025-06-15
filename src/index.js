@@ -51,7 +51,6 @@ export default {
 
     if (request.method === 'POST' && url.pathname === '/submit') {
       try {
-        // 🔧 Parse form data
         let data = {};
         const contentType = request.headers.get('content-type') || '';
         if (contentType.includes('application/x-www-form-urlencoded')) {
@@ -61,18 +60,17 @@ export default {
           return jsonError("Unsupported content type", 415);
         }
 
-        // ✅ Validation
         if (!isAlphaOrSpace(data.firstName) || !isAlphaOrSpace(data.lastName)) {
-          return jsonError("Please enter a valid first and last name (letters, spaces, hyphens, apostrophes only).");
+          return jsonError("Please enter a valid first and last name.");
         }
 
         const hasEmail = data.email && isValidEmail(data.email);
         const hasPhone = data.phone && isValidPhone(data.phone);
         if (!hasEmail && !hasPhone) {
-          return jsonError("Please provide a valid email address or phone number so we can contact you.");
+          return jsonError("Please provide a valid email or phone number.");
         }
 
-        if (!["football", "pizza", "dinner", "bbq"].every(key => isValidChoice(data[key]))) {
+        if (!["football", "pizza", "dinner", "bbq"].every(k => isValidChoice(data[k]))) {
           return jsonError("Please select Yes, No, or Maybe for all attendance questions.");
         }
 
@@ -80,65 +78,57 @@ export default {
           return jsonError("Comments must be 500 characters or fewer.");
         }
 
-        // 💾 Store to KV
         const timestamp = Date.now();
         const key = `rsvp:${timestamp}`;
         console.log("✅ Validation passed. Proceeding to KV write...");
         await env.REUNION_KV.put(key, JSON.stringify(data));
 
-        // 📧 Notify organizers
+        // Notify the team via Resend
         console.log("✅ KV write complete. Sending notification email...");
-        const notifyRes = await fetch('https://api.mailchannels.net/tx/v1/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const notifyRes = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
-            personalizations: [{
-              to: [{ email: 'reunionteam@anacortes1975.com' }],
-              //dkim_domain: "anacortes1975.com",
-              //dkim_selector: "mailchannels",
-              //dkim_private_key: env.DKIM_PRIVATE_KEY
-            }],
-            from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
-            subject: 'New RSVP Submission',
-            content: [{
-              type: 'text/plain',
-              value: JSON.stringify(data, null, 2)
-            }]
+            from: "reunion@anacortes1975.com",
+            to: ["reunionteam@anacortes1975.com"],
+            subject: "New RSVP Submission",
+            text: JSON.stringify(data, null, 2)
           })
         });
 
-        const notifyText = await notifyRes.text();
-        console.log("📤 Notification email response status:", notifyRes.status);
-        console.log("📤 Notification email response body:", notifyText);
+        const notifyBody = await notifyRes.text();
+        console.log("📤 Resend notification status:", notifyRes.status);
+        console.log("📤 Resend response body:", notifyBody);
 
-        // 📧 Confirmation to registrant
+        // Optional confirmation to registrant
         if (hasEmail) {
           console.log("📬 Sending confirmation email to registrant:", data.email);
-          const confirmRes = await fetch('https://api.mailchannels.net/tx/v1/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          const confirmRes = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+              "Content-Type": "application/json"
+            },
             body: JSON.stringify({
-              personalizations: [{ to: [{ email: data.email }] }],
-              from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
-              subject: 'Your RSVP was received',
-              content: [{
-                type: 'text/plain',
-                value: 'Thanks for RSVPing! We’ve received your response and will be in touch with updates.'
-              }]
+              from: "reunion@anacortes1975.com",
+              to: [data.email],
+              subject: "Your RSVP was received",
+              text: "Thanks for RSVPing! We’ve received your response and will be in touch with updates."
             })
           });
 
-          const confirmText = await confirmRes.text();
-          console.log("📬 Confirmation email response status:", confirmRes.status);
-          console.log("📬 Confirmation email response body:", confirmText);
+          const confirmBody = await confirmRes.text();
+          console.log("📬 Confirmation email status:", confirmRes.status);
+          console.log("📬 Confirmation email body:", confirmBody);
         }
 
-        // ✅ Redirect
-        console.log("✅ Confirmation email (if any) sent. Redirecting...");
         return Response.redirect(new URL('/thanks.html', request.url), 303);
       } catch (err) {
         console.error("RSVP Submission Error:", err);
-        return jsonError("Something went wrong processing your submission. Please try again.", 500);
+        return jsonError("Something went wrong processing your submission.", 500);
       }
     }
 
