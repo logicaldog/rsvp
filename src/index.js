@@ -89,32 +89,32 @@ export default {
         // 📧 Notify organizers
         console.log("✅ KV write complete. Sending notification email...");
         const notifyRes = await fetch('https://api.mailchannels.net/tx/v1/send', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    personalizations: [{
-      to: [{ email: 'reunionteam@anacortes1975.com' }],
-      dkim_domain: "anacortes1975.com",
-      dkim_selector: "mailchannels",
-      dkim_private_key: env.DKIM_PRIVATE_KEY
-    }],
-    from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
-    subject: 'New RSVP Submission',
-    content: [{
-      type: 'text/plain',
-      value: JSON.stringify(data, null, 2)
-    }]
-  })
-});
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            personalizations: [{
+              to: [{ email: 'reunionteam@anacortes1975.com' }],
+              dkim_domain: "anacortes1975.com",
+              dkim_selector: "mailchannels",
+              dkim_private_key: env.DKIM_PRIVATE_KEY
+            }],
+            from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
+            subject: 'New RSVP Submission',
+            content: [{
+              type: 'text/plain',
+              value: JSON.stringify(data, null, 2)
+            }]
+          })
+        });
 
-const notifyText = await notifyRes.text();
-console.log("📤 Notification email response status:", notifyRes.status);
-console.log("📤 Notification email response body:", notifyText);
+        const notifyText = await notifyRes.text();
+        console.log("📤 Notification email response status:", notifyRes.status);
+        console.log("📤 Notification email response body:", notifyText);
 
         // 📧 Confirmation to registrant
-        console.log("✅ Notification email sent. Sending confirmation email...");
         if (hasEmail) {
-          await fetch('https://api.mailchannels.net/tx/v1/send', {
+          console.log("📬 Sending confirmation email to registrant:", data.email);
+          const confirmRes = await fetch('https://api.mailchannels.net/tx/v1/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -127,12 +127,15 @@ console.log("📤 Notification email response body:", notifyText);
               }]
             })
           });
+
+          const confirmText = await confirmRes.text();
+          console.log("📬 Confirmation email response status:", confirmRes.status);
+          console.log("📬 Confirmation email response body:", confirmText);
         }
 
         // ✅ Redirect
         console.log("✅ Confirmation email (if any) sent. Redirecting...");
         return Response.redirect(new URL('/thanks.html', request.url), 303);
-        //return Response.redirect('/thanks.html', 303);
       } catch (err) {
         console.error("RSVP Submission Error:", err);
         return jsonError("Something went wrong processing your submission. Please try again.", 500);
@@ -142,4 +145,3 @@ console.log("📤 Notification email response body:", notifyText);
     return new Response('Not Found', { status: 404 });
   }
 };
-
