@@ -88,24 +88,28 @@ export default {
 
         // 📧 Notify organizers
         console.log("✅ KV write complete. Sending notification email...");
-        await fetch('https://api.mailchannels.net/tx/v1/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            personalizations: [{
-              to: [{ email: 'reunionteam@anacortes1975.com' }],
-              dkim_domain: "anacortes1975.com",
-              dkim_selector: "mailchannels",
-              dkim_private_key: env.DKIM_PRIVATE_KEY
-            }],
-            from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
-            subject: 'New RSVP Submission',
-            content: [{
-              type: 'text/plain',
-              value: JSON.stringify(data, null, 2)
-            }]
-          })
-        });
+        const notifyRes = await fetch('https://api.mailchannels.net/tx/v1/send', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    personalizations: [{
+      to: [{ email: 'reunionteam@anacortes1975.com' }],
+      dkim_domain: "anacortes1975.com",
+      dkim_selector: "mailchannels",
+      dkim_private_key: env.DKIM_PRIVATE_KEY
+    }],
+    from: { email: 'noreply@anacortes1975.com', name: 'AHS 1975 Reunion' },
+    subject: 'New RSVP Submission',
+    content: [{
+      type: 'text/plain',
+      value: JSON.stringify(data, null, 2)
+    }]
+  })
+});
+
+const notifyText = await notifyRes.text();
+console.log("📤 Notification email response status:", notifyRes.status);
+console.log("📤 Notification email response body:", notifyText);
 
         // 📧 Confirmation to registrant
         console.log("✅ Notification email sent. Sending confirmation email...");
