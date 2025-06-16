@@ -1,21 +1,27 @@
+// src/index.js
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
 function isValidPhone(phone) {
   return /^\+?[0-9\s\-().]{7,20}$/.test(phone);
 }
+
 function isAlphaOrSpace(str) {
   return /^[a-zA-Z\s'\-]{1,50}$/.test(str);
 }
+
 function isValidChoice(val) {
   return ["Yes", "No", "Maybe"].includes(val);
 }
+
 function jsonError(message, status = 400) {
   return new Response(JSON.stringify({ error: message }), {
     status,
     headers: { 'Content-Type': 'application/json' }
   });
 }
+
 async function serveAsset(path) {
   const page = await fetch(`https://raw.githubusercontent.com/logicaldog/rsvp/main/${path}`);
   if (page.ok) {
@@ -32,9 +38,15 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === 'GET') {
-      if (url.pathname === '/' || url.pathname === '/index.html') return serveAsset('index.html');
-      if (url.pathname === '/rsvp.html') return serveAsset('rsvp.html');
-      if (url.pathname === '/thanks.html') return serveAsset('thanks.html');
+      if (url.pathname === '/' || url.pathname === '/index.html') {
+        return serveAsset('index.html');
+      }
+      if (url.pathname === '/rsvp.html') {
+        return serveAsset('rsvp.html');
+      }
+      if (url.pathname === '/thanks.html') {
+        return serveAsset('thanks.html');
+      }
       return new Response('Not Found', { status: 404 });
     }
 
@@ -49,81 +61,79 @@ export default {
           return jsonError("Unsupported content type", 415);
         }
 
-        // Validation
         if (!isAlphaOrSpace(data.firstName) || !isAlphaOrSpace(data.lastName)) {
-          return jsonError("Please enter a valid first and last name.");
+          return jsonError("Please enter a valid first and last name (letters, spaces, hyphens, apostrophes only)."
+          );
         }
+
         const hasEmail = data.email && isValidEmail(data.email);
         const hasPhone = data.phone && isValidPhone(data.phone);
         if (!hasEmail && !hasPhone) {
-          return jsonError("Please provide a valid email or phone.");
-        }
-        if (!["football", "pizza", "dinner", "bbq"].every(key => isValidChoice(data[key]))) {
-          return jsonError("Invalid attendance choices.");
-        }
-        if (data.comments && data.comments.length > 500) {
-          return jsonError("Comments too long.");
+          return jsonError("Please provide a valid email address or phone number so we can contact you.");
         }
 
-        // KV Store
+        if (!["football", "pizza", "dinner", "bbq"].every(key => isValidChoice(data[key]))) {
+          return jsonError("Please select Yes, No, or Maybe for all attendance questions.");
+        }
+
+        if (data.comments && data.comments.length > 500) {
+          return jsonError("Comments must be 500 characters or fewer.");
+        }
+
         const timestamp = Date.now();
         const key = `rsvp:${timestamp}`;
         console.log("✅ Validation passed. Proceeding to KV write...");
         await env.REUNION_KV.put(key, JSON.stringify(data));
-        console.log("✅ KV write complete. Sending Mailgun email...");
 
-        const mailgunDomain = 'anacortes1975.com';
-        const base64API = btoa(`api:${env.MAILGUN_API_KEY}`);
+        // Notification email
+        const summary = `\nNew RSVP Submission:\n\nName: ${data.firstName} ${data.lastName}${data.maidenName ? ` (${data.maidenName})` : ''}\nEmail: ${data.email || 'N/A'}\nPhone: ${data.phone || 'N/A'}\nAddress: ${data.address || ''}, ${data.city || ''}, ${data.state || ''} ${data.zip || ''}\n\nAttendance Plans:\n- Football Game: ${data.football}\n- Village Pizza: ${data.pizza}\n- Saturday Dinner: ${data.dinner}\n- Sunday BBQ: ${data.bbq}\n\nComments:\n${data.comments || '(none)'}\n\n--- Raw JSON ---\n${JSON.stringify(data, null, 2)}\n`;
 
-        // Notify organizer
-        const notifyBody = new URLSearchParams({
-          from: `AHS 1975 Reunion <noreply@${mailgunDomain}>`,
-          to: 'reunionteam@anacortes1975.com',
-          subject: 'New RSVP Submission',
-          text: JSON.stringify(data, null, 2)
-        });
-
-        const notifyRes = await fetch(`https://api.mailgun.net/v3/${mailgunDomain}/messages`, {
+        console.log("📤 Sending Mailgun email...");
+        const notifyRes = await fetch('https://api.mailgun.net/v3/anacortes1975.com/messages', {
           method: 'POST',
           headers: {
-            Authorization: `Basic ${base64API}`,
+            Authorization: `Basic ${btoa(`api:${env.MAILGUN_API_KEY}`)}`,
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: notifyBody.toString()
+          body: new URLSearchParams({
+            from: 'reunionteam@anacortes1975.com',
+            to: 'reunionteam@anacortes1975.com',
+            subject: 'New RSVP Submission',
+            text: summary,
+            'h:Reply-To': 'reunionteam@anacortes1975.com'
+          })
         });
-
         console.log("📤 Notification status:", notifyRes.status);
-        const notifyText = await notifyRes.text();
-        console.log("📤 Notification response:", notifyText);
+        console.log("📤 Notification response:", await notifyRes.text());
 
-        // Confirmation to registrant
+        // Confirmation email
         if (hasEmail) {
-          const confirmBody = new URLSearchParams({
-            from: `AHS 1975 Reunion <noreply@${mailgunDomain}>`,
-            to: data.email,
-            subject: 'Your RSVP was received',
-            text: 'Thanks for RSVPing! We’ll be in touch with updates.'
-          });
+          const confirmationText = `\nHi ${data.firstName},\n\nThanks for RSVPing to the AHS Class of 1975 Reunion!\nWe’ve received your response and will be in touch later this summer with more details and reminders.\n\nIf you’re planning to attend the Saturday dinner, please visit:\nhttps://registration.anacortes1975.com to register and purchase your tickets.\n\n– The Reunion Team\n`;
 
-          const confirmRes = await fetch(`https://api.mailgun.net/v3/${mailgunDomain}/messages`, {
+          console.log("📬 Sending confirmation email to registrant:", data.email);
+          const confirmRes = await fetch('https://api.mailgun.net/v3/anacortes1975.com/messages', {
             method: 'POST',
             headers: {
-              Authorization: `Basic ${base64API}`,
+              Authorization: `Basic ${btoa(`api:${env.MAILGUN_API_KEY}`)}`,
               'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: confirmBody.toString()
+            body: new URLSearchParams({
+              from: 'reunionteam@anacortes1975.com',
+              to: data.email,
+              subject: 'Thanks for your RSVP!',
+              text: confirmationText,
+              'h:Reply-To': 'reunionteam@anacortes1975.com'
+            })
           });
-
           console.log("📬 Confirmation email status:", confirmRes.status);
           console.log("📬 Confirmation email response:", await confirmRes.text());
         }
 
         console.log("✅ Emails sent. Redirecting...");
         return Response.redirect(new URL('/thanks.html', request.url), 303);
-
       } catch (err) {
         console.error("RSVP Submission Error:", err);
-        return jsonError("Something went wrong processing your submission.", 500);
+        return jsonError("Something went wrong processing your submission. Please try again.", 500);
       }
     }
 
