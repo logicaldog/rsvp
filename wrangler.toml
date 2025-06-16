@@ -4,8 +4,5 @@ main = "src/index.js"
 compatibility_date = "2024-06-01"
 
 kv_namespaces = [
-  { binding = "REUNION_KV", id = "your_kv_namespace_id_here" }
+  { binding = "REUNION_KV", id = "rsvp-submissions" }
 ]
-
-[vars]
-DKIM_PRIVATE_KEY = "your_dkim_private_key_here"
